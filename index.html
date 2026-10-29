@@ -1,0 +1,914 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2f3a2a">
+<title>Matapan · Πάγια</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Serif:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f3ec; --bg-2:#ece7dc; --card:#fffdf8; --ink:#23261f; --ink-2:#5d5f55; --rule:#d9d2c3;
+  --olive:#4c5b3a; --olive-ink:#fff; --ochre:#b5762b; --ok:#3d7a4a; --warn:#b3711b; --bad:#a3361f;
+  --plate:#2f6f8f; --web:#7b5aa6; --shadow:0 1px 2px rgba(0,0,0,.06),0 4px 14px rgba(0,0,0,.05);
+  --serif:"Noto Serif",Georgia,serif; --sans:"Noto Sans",system-ui,sans-serif;
+}
+:root[data-theme="dark"]{
+  --bg:#171915; --bg-2:#20231d; --card:#23261f; --ink:#ece8de; --ink-2:#a9a89c; --rule:#383b32;
+  --olive:#8fa66d; --olive-ink:#141611; --ochre:#d69a4f; --ok:#7cc08a; --warn:#e2a24f; --bad:#e68b6e;
+  --plate:#7fbcd9; --web:#b79ce0; --shadow:none;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#171915; --bg-2:#20231d; --card:#23261f; --ink:#ece8de; --ink-2:#a9a89c; --rule:#383b32;
+  --olive:#8fa66d; --olive-ink:#141611; --ochre:#d69a4f; --ok:#7cc08a; --warn:#e2a24f; --bad:#e68b6e;
+  --plate:#7fbcd9; --web:#b79ce0; --shadow:none;
+}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.45 var(--sans);-webkit-text-size-adjust:100%}
+body{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+a{color:inherit}
+h1,h2,h3{margin:0;font-weight:600;line-height:1.2}
+h1{font:500 1.5rem var(--serif)}
+h2{font-size:1.1rem}
+h3{font-size:.95rem}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px}
+header.top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--rule)}
+header.top .wrap{display:flex;align-items:center;gap:12px;min-height:56px}
+.logo{font:500 1.05rem var(--serif);letter-spacing:.14em;font-variant:small-caps}
+.logo small{display:block;font:500 .7rem var(--sans);letter-spacing:.04em;color:var(--ink-2);font-variant:normal}
+.spacer{flex:1}
+nav.tabs{position:fixed;bottom:0;left:0;right:0;z-index:30;background:var(--card);border-top:1px solid var(--rule);display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px 9px;font-size:.72rem;text-decoration:none;color:var(--ink-2)}
+nav.tabs a svg{width:22px;height:22px}
+nav.tabs a.on{color:var(--olive);font-weight:600}
+main{padding:16px 0 24px}
+.stack>*+*{margin-top:12px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.grid2{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+.grid3{display:grid;gap:10px;grid-template-columns:repeat(3,1fr)}
+@media(max-width:560px){.grid2{grid-template-columns:1fr}.grid3{grid-template-columns:1fr 1fr}}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:14px;box-shadow:var(--shadow)}
+.muted{color:var(--ink-2)}
+.small{font-size:.85rem}
+.btn{appearance:none;border:1px solid var(--rule);background:var(--card);color:var(--ink);border-radius:8px;padding:0 14px;min-height:44px;font:500 .95rem var(--sans);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+.btn.primary{background:var(--olive);border-color:var(--olive);color:var(--olive-ink)}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.danger{color:var(--bad)}
+.btn.sm{min-height:36px;padding:0 10px;font-size:.85rem}
+.btn.block{width:100%}
+.btn:disabled{opacity:.55;cursor:default}
+.btn svg{width:18px;height:18px}
+label.f{display:grid;gap:4px;font-size:.85rem;font-weight:500;color:var(--ink-2)}
+input,select,textarea{font:400 1rem var(--sans);color:var(--ink);background:var(--bg);border:1px solid var(--rule);border-radius:8px;padding:10px 11px;min-height:44px;width:100%}
+textarea{min-height:80px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--olive);outline-offset:0;border-color:transparent}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:560px){.kpis{grid-template-columns:1fr 1fr}}
+.kpi{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:12px}
+.kpi b{display:block;font:500 1.6rem var(--serif)}
+.kpi span{font-size:.8rem;color:var(--ink-2)}
+.list{display:grid;gap:8px}
+.item{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:10px 12px;text-decoration:none;color:inherit;cursor:pointer}
+.item .thumb{width:52px;height:52px;border-radius:8px;background:var(--bg-2);flex:none;object-fit:cover;display:flex;align-items:center;justify-content:center;color:var(--ink-2)}
+.item .thumb svg{width:24px;height:24px}
+.item .body{flex:1;min-width:0}
+.item .t{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .s{font-size:.83rem;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--bg-2);color:var(--ink-2);white-space:nowrap}
+.pill.ok{color:var(--ok)} .pill.warn{color:var(--warn)} .pill.bad{color:var(--bad)}
+.pill.plate{color:var(--plate)} .pill.web{color:var(--web)}
+.src{font-size:.68rem;font-weight:600;margin-left:6px}
+.src.plate{color:var(--plate)} .src.web{color:var(--web)}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:20px 0 8px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.chips button{flex:none;border:1px solid var(--rule);background:var(--card);color:var(--ink-2);border-radius:99px;padding:6px 12px;font:500 .85rem var(--sans);cursor:pointer;min-height:34px}
+.chips button.on{background:var(--olive);border-color:var(--olive);color:var(--olive-ink)}
+.ai-box{border:1px dashed var(--olive);border-radius:10px;padding:14px;background:color-mix(in srgb,var(--olive) 6%,var(--card))}
+.ai-box .row{justify-content:space-between}
+.photos{display:flex;gap:8px;flex-wrap:wrap}
+.photos img{width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid var(--rule);cursor:pointer}
+.kv{display:grid;grid-template-columns:1fr 1fr auto;gap:6px;align-items:center}
+.kv+.kv{margin-top:6px}
+table.t{width:100%;border-collapse:collapse;font-size:.9rem}
+table.t th,table.t td{padding:8px 6px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:middle}
+table.t th{font-size:.75rem;color:var(--ink-2);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+table.t td.n,table.t th.n{text-align:right;font-variant-numeric:tabular-nums}
+.tbl-wrap{overflow-x:auto}
+.qty{display:flex;align-items:center;gap:6px}
+.qty b{min-width:44px;text-align:center;font:600 1.1rem var(--sans);font-variant-numeric:tabular-nums}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:.9rem;z-index:60;max-width:90vw;box-shadow:var(--shadow)}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.modal{background:var(--card);width:100%;max-width:520px;border-radius:14px 14px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto}
+@media(min-width:600px){.modal-bg{align-items:center}.modal{border-radius:14px}}
+.empty{text-align:center;padding:28px 12px;color:var(--ink-2)}
+.spin{width:18px;height:18px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sp .7s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+.login{max-width:380px;margin:12vh auto 0;padding:0 16px}
+.err{color:var(--bad);font-size:.88rem;min-height:1.2em}
+.hide{display:none!important}
+details.card summary{cursor:pointer;font-weight:600;list-style:none}
+details.card summary::after{content:"＋";float:right;color:var(--ink-2)}
+details.card[open] summary::after{content:"－"}
+.fab{position:fixed;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:25;border-radius:99px;min-height:52px;padding:0 18px;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.view-img{max-width:100%;border-radius:8px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+/* ===================== ΡΥΘΜΙΣΕΙΣ ===================== */
+const SUPABASE_URL = "https://nyewzkhpyscikppirefl.supabase.co";
+const SUPABASE_KEY = "sb_publishable_FN7lcyYJKY4yt6L8E9Afaw_JRyaoJBv";
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+/* ===================== Βοηθητικά ===================== */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const today = () => new Date().toISOString().slice(0, 10);
+const fmtDate = (d) => (d ? new Date(d + (d.length === 10 ? "T00:00:00" : "")).toLocaleDateString("el-GR", { day: "numeric", month: "short", year: "numeric" }) : "—");
+const daysTo = (d) => (d ? Math.round((new Date(d + "T00:00:00") - new Date(today() + "T00:00:00")) / 864e5) : null);
+const eur = (n) => (n == null || n === "" ? "—" : Number(n).toLocaleString("el-GR", { style: "currency", currency: "EUR" }));
+const num = (v) => (v === "" || v == null ? null : Number(v));
+const intOrNull = (v) => (v === "" || v == null ? null : parseInt(v, 10));
+const nul = (v) => (v == null || String(v).trim() === "" ? null : String(v).trim());
+
+const ICON = {
+  home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>',
+  eq: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M5 10h14M8 6v1.5M8 13v3"/></svg>',
+  stock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10l-1 8a4 4 0 0 1-8 0z"/><path d="M12 15v6M9 21h6"/></svg>',
+  event: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>',
+  set: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  cam: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3l2-3h6l2 3h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="4"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+  wrench: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/></svg>',
+};
+
+function toast(msg, ms = 2600) {
+  const t = document.createElement("div");
+  t.className = "toast"; t.textContent = msg; document.body.appendChild(t);
+  setTimeout(() => t.remove(), ms);
+}
+function modal(html, onMount) {
+  const bg = document.createElement("div");
+  bg.className = "modal-bg";
+  bg.innerHTML = `<div class="modal" role="dialog" aria-modal="true">${html}</div>`;
+  const close = () => bg.remove();
+  bg.addEventListener("click", (e) => { if (e.target === bg) close(); });
+  document.body.appendChild(bg);
+  onMount?.(bg.firstElementChild, close);
+  return close;
+}
+async function busy(btn, fn) {
+  const old = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<span class="spin"></span>';
+  try { return await fn(); } finally { btn.disabled = false; btn.innerHTML = old; }
+}
+function check(res) { if (res.error) throw res.error; return res.data; }
+
+/* Εικόνα: σμίκρυνση στο κινητό πριν το ανέβασμα / την αποστολή στο AI */
+function loadImage(file) {
+  return new Promise((ok, fail) => {
+    const url = URL.createObjectURL(file); const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); ok(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); fail(new Error("Η εικόνα δεν άνοιξε")); };
+    img.src = url;
+  });
+}
+async function shrink(file, max = 1800, q = 0.86) {
+  const img = await loadImage(file);
+  const s = Math.min(1, max / Math.max(img.width, img.height));
+  const c = document.createElement("canvas");
+  c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+  c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+  const blob = await new Promise((r) => c.toBlob(r, "image/jpeg", q));
+  return { blob, dataUrl: c.toDataURL("image/jpeg", q) };
+}
+function pickPhoto({ camera = true } = {}) {
+  return new Promise((resolve) => {
+    const i = document.createElement("input");
+    i.type = "file"; i.accept = "image/*"; if (camera) i.capture = "environment";
+    i.onchange = () => resolve(i.files?.[0] || null);
+    i.click();
+  });
+}
+async function uploadPhoto(blob, { equipment_id = null, stock_item_id = null, kind = "item" }) {
+  const path = `${equipment_id ? "eq/" + equipment_id : "st/" + stock_item_id}/${kind}-${crypto.randomUUID()}.jpg`;
+  check(await sb.storage.from("photos").upload(path, blob, { contentType: "image/jpeg" }));
+  check(await sb.from("photos").insert({ equipment_id, stock_item_id, path, kind }));
+}
+async function signed(paths) {
+  if (!paths.length) return {};
+  const { data } = await sb.storage.from("photos").createSignedUrls(paths, 3600);
+  return Object.fromEntries((data || []).map((d) => [d.path, d.signedUrl]));
+}
+async function ai(feature, payload) {
+  const { data, error } = await sb.functions.invoke("assets-ai", { body: { feature, ...payload } });
+  if (error) {
+    let msg = error.message;
+    try { const b = await error.context.json(); if (b?.error) msg = b.error; } catch {}
+    throw new Error(msg);
+  }
+  return data;
+}
+
+/* ===================== Κατάσταση εφαρμογής ===================== */
+const S = { user: null, me: null, locations: [], categories: [], settings: null };
+async function loadRefs() {
+  const [l, c, s, m] = await Promise.all([
+    sb.from("locations").select("*").order("sort"),
+    sb.from("categories").select("*").order("sort"),
+    sb.from("settings").select("*").eq("id", 1).maybeSingle(),
+    sb.from("members").select("*").eq("user_id", S.user.id).maybeSingle(),
+  ]);
+  S.locations = l.data || []; S.categories = c.data || []; S.settings = s.data; S.me = m.data;
+}
+const catName = (id) => S.categories.find((c) => c.id === id)?.name || "—";
+const locName = (id) => S.locations.find((l) => l.id === id)?.name || "—";
+const opts = (list, sel, empty = "—") => `<option value="">${empty}</option>` + list.map((x) => `<option value="${x.id}" ${x.id === sel ? "selected" : ""}>${esc(x.name)}</option>`).join("");
+
+const STATUS = { ok: ["Λειτουργεί", "ok"], needs_repair: ["Θέλει επισκευή", "warn"], out_of_service: ["Εκτός λειτουργίας", "bad"], retired: ["Αποσύρθηκε", ""] };
+const SVC = { service: "Σέρβις", repair: "Επισκευή", inspection: "Έλεγχος", cleaning: "Καθαρισμός" };
+const MOVE = { received: "Παραλαβή", purchase: "Αγορά", broken: "Σπάσιμο", lost: "Απώλεια", count: "Μέτρηση", returned: "Επιστροφή", other: "Άλλο" };
+
+function svcPill(e) {
+  if (e.status !== "ok") return `<span class="pill ${STATUS[e.status][1]}">${STATUS[e.status][0]}</span>`;
+  const d = daysTo(e.next_service_date);
+  if (d == null) return "";
+  if (d < 0) return `<span class="pill bad">Σέρβις εκπρόθεσμο</span>`;
+  if (d <= 30) return `<span class="pill warn">Σέρβις σε ${d} ημ.</span>`;
+  return "";
+}
+
+/* ===================== Δρομολόγηση ===================== */
+const routes = [];
+const route = (re, fn) => routes.push([re, fn]);
+function go(h) { location.hash = h; }
+async function render() {
+  const h = location.hash.slice(1) || "/";
+  $$("nav.tabs a").forEach((a) => a.classList.toggle("on", h === a.dataset.r || (a.dataset.r !== "/" && h.startsWith(a.dataset.r))));
+  const main = $("main");
+  for (const [re, fn] of routes) {
+    const m = h.match(re);
+    if (m) {
+      main.innerHTML = '<div class="empty"><span class="spin"></span></div>';
+      try { await fn(main, ...m.slice(1)); } catch (e) { console.error(e); main.innerHTML = `<div class="card err">${esc(e.message || e)}</div>`; }
+      window.scrollTo(0, 0);
+      return;
+    }
+  }
+  go("/");
+}
+window.addEventListener("hashchange", render);
+
+function shell() {
+  $("#app").innerHTML = `
+  <header class="top"><div class="wrap">
+    <div class="logo">Matapan<small>Πάγια &amp; εξοπλισμός</small></div>
+    <div class="spacer"></div>
+    <button class="btn ghost sm" id="out">Έξοδος</button>
+  </div></header>
+  <div class="wrap"><main></main></div>
+  <nav class="tabs">
+    <a href="#/" data-r="/">${ICON.home}Αρχική</a>
+    <a href="#/eq" data-r="/eq">${ICON.eq}Μηχανήματα</a>
+    <a href="#/st" data-r="/st">${ICON.stock}Σκεύη</a>
+    <a href="#/ev" data-r="/ev">${ICON.event}Εκδηλώσεις</a>
+    <a href="#/set" data-r="/set">${ICON.set}Ρυθμίσεις</a>
+  </nav>`;
+  $("#out").onclick = async () => { await sb.auth.signOut(); location.hash = ""; boot(); };
+}
+
+/* ===================== Σύνδεση ===================== */
+function loginView(msg = "") {
+  $("#app").innerHTML = `
+  <div class="login stack">
+    <div class="logo" style="font-size:1.6rem">Matapan<small style="font-size:.85rem">Πάγια &amp; εξοπλισμός</small></div>
+    <form class="card stack" id="lf">
+      <label class="f">E-mail<input type="email" name="email" autocomplete="email" required></label>
+      <label class="f">Κωδικός<input type="password" name="pw" autocomplete="current-password" minlength="8" required></label>
+      <div class="err" id="le">${esc(msg)}</div>
+      <button class="btn primary block" id="lb">Σύνδεση</button>
+      <button type="button" class="btn ghost block small" id="ls">Πρώτη φορά; Δημιουργία λογαριασμού</button>
+    </form>
+    <p class="small muted">Ο πρώτος λογαριασμός γίνεται διαχειριστής. Οι επόμενοι χρειάζεται πρώτα να προστεθούν από τις Ρυθμίσεις.</p>
+  </div>`;
+  let signup = false;
+  $("#ls").onclick = () => { signup = !signup; $("#lb").textContent = signup ? "Δημιουργία λογαριασμού" : "Σύνδεση"; $("#ls").textContent = signup ? "Έχω ήδη λογαριασμό" : "Πρώτη φορά; Δημιουργία λογαριασμού"; };
+  $("#lf").onsubmit = (e) => {
+    e.preventDefault();
+    const f = new FormData(e.target), email = f.get("email").trim().toLowerCase(), password = f.get("pw");
+    busy($("#lb"), async () => {
+      $("#le").textContent = "";
+      if (signup) {
+        const { data, error } = await sb.auth.signUp({ email, password, options: { emailRedirectTo: location.origin + location.pathname } });
+        if (error) return ($("#le").textContent = error.message);
+        if (!data.session) return ($("#le").textContent = "Σου στείλαμε e-mail επιβεβαίωσης. Πάτα το link και μετά συνδέσου εδώ.");
+      } else {
+        const { error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) return ($("#le").textContent = error.message.includes("Invalid") ? "Λάθος e-mail ή κωδικός" : error.message);
+      }
+      boot();
+    });
+  };
+}
+
+/* ===================== Αρχική ===================== */
+route(/^\/$/, async (el) => {
+  const in60 = new Date(Date.now() + 60 * 864e5).toISOString().slice(0, 10);
+  const [eq, st, br] = await Promise.all([
+    sb.from("equipment").select("id,code,name,status,next_service_date,warranty_until,location_id").neq("status", "retired"),
+    sb.from("stock_items").select("id,name,qty_current,par_level,spec"),
+    sb.from("stock_movements").select("delta,item_id,created_at").in("reason", ["broken", "lost"]).gte("created_at", new Date(Date.now() - 30 * 864e5).toISOString()),
+  ]);
+  const E = eq.data || [], ST = st.data || [];
+  const svc = E.filter((e) => e.next_service_date && daysTo(e.next_service_date) <= 30).sort((a, b) => a.next_service_date.localeCompare(b.next_service_date));
+  const broken = E.filter((e) => ["needs_repair", "out_of_service"].includes(e.status));
+  const warr = E.filter((e) => e.warranty_until && e.warranty_until >= today() && e.warranty_until <= in60);
+  const low = ST.filter((s) => s.par_level != null && s.qty_current < s.par_level);
+  const lost30 = (br.data || []).reduce((s, m) => s - m.delta, 0);
+  const row = (e, sub) => `<a class="item" href="#/eq/${e.id}"><div class="body"><div class="t">${esc(e.name)}</div><div class="s">${esc(e.code)} · ${esc(locName(e.location_id))}${sub ? " · " + sub : ""}</div></div>${svcPill(e)}</a>`;
+  el.innerHTML = `
+  <div class="stack">
+    <h1>Καλησπέρα</h1>
+    <div class="kpis">
+      <div class="kpi"><b>${E.length}</b><span>μηχανήματα</span></div>
+      <div class="kpi"><b>${ST.length}</b><span>είδη σκευών</span></div>
+      <div class="kpi"><b>${svc.length}</b><span>σέρβις σε 30 ημ.</span></div>
+      <div class="kpi"><b>${lost30}</b><span>σπασμένα/χαμένα 30 ημ.</span></div>
+    </div>
+    <div class="grid2">
+      <button class="btn primary" id="q1">${ICON.cam}Νέο μηχάνημα από ταμπέλα</button>
+      <a class="btn" href="#/st/new">${ICON.plus}Νέο είδος σκευών</a>
+    </div>
+    ${broken.length ? `<div class="sec-h"><h2>Θέλουν προσοχή</h2></div><div class="list">${broken.map((e) => row(e)).join("")}</div>` : ""}
+    <div class="sec-h"><h2>Σέρβις που έρχεται</h2><span class="small muted">επόμενες 30 ημέρες</span></div>
+    ${svc.length ? `<div class="list">${svc.map((e) => row(e, fmtDate(e.next_service_date))).join("")}</div>` : `<div class="card empty small">Τίποτα για τις επόμενες 30 ημέρες.</div>`}
+    ${low.length ? `<div class="sec-h"><h2>Κάτω από το ελάχιστο</h2></div><div class="list">${low.map((s) => `<a class="item" href="#/st/${s.id}"><div class="body"><div class="t">${esc(s.name)}</div><div class="s">${esc(s.spec || "")}</div></div><span class="pill warn">${s.qty_current} / ${s.par_level}</span></a>`).join("")}</div>` : ""}
+    ${warr.length ? `<div class="sec-h"><h2>Εγγυήσεις που λήγουν</h2><span class="small muted">60 ημέρες</span></div><div class="list">${warr.map((e) => row(e, "εγγύηση έως " + fmtDate(e.warranty_until))).join("")}</div>` : ""}
+  </div>`;
+  $("#q1").onclick = () => go("/eq/new?plate=1");
+});
+
+/* ===================== Μηχανήματα: λίστα ===================== */
+let eqFilter = { q: "", loc: "", cat: "" };
+route(/^\/eq$/, async (el) => {
+  const [eq, ph] = await Promise.all([
+    sb.from("equipment").select("*").order("code"),
+    sb.from("photos").select("equipment_id,path,kind,created_at").not("equipment_id", "is", null).order("created_at"),
+  ]);
+  const E = eq.data || [];
+  const first = {};
+  // μικρογραφία: προτιμάται φωτογραφία του μηχανήματος, αλλιώς η ταμπέλα
+  for (const p of ph.data || []) { const cur = first[p.equipment_id]; if (!cur || (cur.kind === "plate" && p.kind === "item")) first[p.equipment_id] = p; }
+  const urls = await signed(Object.values(first).map((p) => p.path));
+  const usedLocs = S.locations.filter((l) => E.some((e) => e.location_id === l.id));
+  el.innerHTML = `
+  <div class="stack">
+    <div class="row"><h1>Μηχανήματα</h1><div class="spacer"></div><span class="muted small">${E.length}</span></div>
+    <input type="search" id="q" placeholder="Αναζήτηση: όνομα, μάρκα, μοντέλο, σειριακός…" value="${esc(eqFilter.q)}">
+    <div class="chips" id="lc"><button data-v="" class="${!eqFilter.loc ? "on" : ""}">Όλοι οι χώροι</button>${usedLocs.map((l) => `<button data-v="${l.id}" class="${eqFilter.loc === l.id ? "on" : ""}">${esc(l.name)}</button>`).join("")}</div>
+    <div class="list" id="ls"></div>
+  </div>
+  <button class="btn primary fab" id="add">${ICON.cam}Νέο</button>`;
+  const draw = () => {
+    const q = eqFilter.q.toLowerCase();
+    const rows = E.filter((e) => (!eqFilter.loc || e.location_id === eqFilter.loc) &&
+      (!q || [e.name, e.brand, e.model, e.serial_number, e.code, catName(e.category_id)].some((x) => String(x || "").toLowerCase().includes(q))));
+    $("#ls").innerHTML = rows.length ? rows.map((e) => {
+      const p = first[e.id];
+      return `<a class="item" href="#/eq/${e.id}">${p && urls[p.path] ? `<img class="thumb" src="${urls[p.path]}" alt="">` : `<div class="thumb">${ICON.eq}</div>`}
+      <div class="body"><div class="t">${esc(e.name)}</div><div class="s">${esc([e.brand, e.model].filter(Boolean).join(" ") || catName(e.category_id))}</div><div class="s">${esc(e.code)} · ${esc(locName(e.location_id))}${e.serial_number ? " · S/N " + esc(e.serial_number) : ""}</div></div>${svcPill(e)}</a>`;
+    }).join("") : `<div class="card empty">${E.length ? "Δεν βρέθηκε τίποτα." : "Δεν έχεις καταχωρήσει ακόμα μηχανήματα.<br>Πάτα «Νέο» και φωτογράφισε την ταμπέλα."}</div>`;
+  };
+  draw();
+  $("#q").oninput = (e) => { eqFilter.q = e.target.value; draw(); };
+  $("#lc").onclick = (e) => { const b = e.target.closest("button"); if (!b) return; eqFilter.loc = b.dataset.v; $$("#lc button").forEach((x) => x.classList.toggle("on", x === b)); draw(); };
+  $("#add").onclick = () => go("/eq/new?plate=1");
+});
+
+/* ===================== Μηχάνημα: καρτέλα / φόρμα ===================== */
+const EQ_FIELDS = ["name", "brand", "model", "serial_number", "manufacture_year"];
+route(/^\/eq\/(new|[0-9a-f-]{36})(?:\?(.*))?$/, async (el, id, qs) => {
+  const isNew = id === "new";
+  let e = { name: "", specs: {}, field_sources: {}, web_sources: [], status: "ok", received_date: today() }, photos = [], logs = [];
+  if (!isNew) {
+    const [a, b, c] = await Promise.all([
+      sb.from("equipment").select("*").eq("id", id).single(),
+      sb.from("photos").select("*").eq("equipment_id", id).order("created_at"),
+      sb.from("service_log").select("*").eq("equipment_id", id).order("done_on", { ascending: false }),
+    ]);
+    e = check(a); photos = b.data || []; logs = c.data || [];
+  }
+  const pending = []; // φωτογραφίες που θα ανέβουν μετά την αποθήκευση {blob, kind, url}
+  const srcTag = (f) => e.field_sources?.[f] === "plate" ? '<span class="src plate">ταμπέλα</span>' : e.field_sources?.[f] === "web" ? '<span class="src web">web · να ελεγχθεί</span>' : "";
+  const urls = await signed(photos.map((p) => p.path));
+  const eqCats = S.categories.filter((c) => c.kind === "equipment");
+
+  el.innerHTML = `
+  <div class="stack">
+    <div class="row"><a class="btn ghost sm" href="#/eq">${ICON.back}</a><h1 style="flex:1">${isNew ? "Νέο μηχάνημα" : esc(e.name)}</h1>${isNew ? "" : `<span class="pill">${esc(e.code)}</span>`}</div>
+
+    <div class="ai-box stack">
+      <div class="row"><div><h3>Φωτογραφία ταμπέλας</h3><div class="small muted">Το AI διαβάζει μάρκα, μοντέλο, σειριακό${S.settings?.web_lookup ? " και βρίσκει τα υπόλοιπα στοιχεία στο web" : ""}.</div></div></div>
+      <div class="row"><button class="btn primary" id="snap">${ICON.cam}Φωτογράφιση</button><button class="btn sm" id="gal">Από τη συλλογή</button></div>
+      <div id="aiout" class="small"></div>
+    </div>
+
+    <form id="ef" class="stack" autocomplete="off">
+      <div class="card stack">
+        <label class="f">Όνομα ${srcTag("name")}<input name="name" required value="${esc(e.name)}" placeholder="π.χ. Ψυγείο πάγκου μπαρ"></label>
+        <div class="grid2">
+          <label class="f">Κατηγορία<select name="category_id">${opts(eqCats, e.category_id)}</select></label>
+          <label class="f">Χώρος<select name="location_id">${opts(S.locations, e.location_id)}</select></label>
+        </div>
+        <div class="grid2">
+          <label class="f">Μάρκα ${srcTag("brand")}<input name="brand" value="${esc(e.brand)}"></label>
+          <label class="f">Μοντέλο ${srcTag("model")}<input name="model" value="${esc(e.model)}"></label>
+        </div>
+        <div class="grid2">
+          <label class="f">Σειριακός αριθμός ${srcTag("serial_number")}<input name="serial_number" value="${esc(e.serial_number)}" style="font-family:ui-monospace,monospace"></label>
+          <label class="f">Έτος κατασκευής ${srcTag("manufacture_year")}<input name="manufacture_year" inputmode="numeric" value="${esc(e.manufacture_year)}"></label>
+        </div>
+        <label class="f">Κατάσταση<select name="status">${Object.entries(STATUS).map(([k, v]) => `<option value="${k}" ${e.status === k ? "selected" : ""}>${v[0]}</option>`).join("")}</select></label>
+      </div>
+
+      <details class="card" open><summary>Τεχνικά χαρακτηριστικά</summary>
+        <div id="specs" style="margin-top:10px"></div>
+        <button type="button" class="btn sm" id="addspec" style="margin-top:8px">${ICON.plus}Πεδίο</button>
+        <div id="websrc" class="small muted" style="margin-top:8px"></div>
+      </details>
+
+      <details class="card" ${isNew ? "" : "open"}><summary>Σέρβις</summary>
+        <div class="stack" style="margin-top:10px">
+          <div class="grid2">
+            <label class="f">Σέρβις κάθε (μήνες) ${srcTag("service_interval_months")}<input name="service_interval_months" inputmode="numeric" value="${esc(e.service_interval_months)}"></label>
+            <label class="f">Τελευταίο σέρβις<input type="date" name="last_service_date" value="${esc(e.last_service_date)}"></label>
+          </div>
+          ${!isNew ? `<div class="small">Επόμενο σέρβις: <b>${fmtDate(e.next_service_date)}</b> ${svcPill(e)}</div>` : ""}
+          <div class="grid2">
+            <label class="f">Τεχνικός / συνεργείο<input name="technician_name" value="${esc(e.technician_name)}"></label>
+            <label class="f">Τηλέφωνο τεχνικού<input type="tel" name="technician_phone" value="${esc(e.technician_phone)}"></label>
+          </div>
+          ${e.technician_phone ? `<a class="btn sm" href="tel:${esc(e.technician_phone)}">Κλήση τεχνικού</a>` : ""}
+        </div>
+      </details>
+
+      <details class="card"><summary>Αγορά &amp; εγγύηση</summary>
+        <div class="stack" style="margin-top:10px">
+          <div class="grid2">
+            <label class="f">Ημ. παραλαβής<input type="date" name="received_date" value="${esc(e.received_date)}"></label>
+            <label class="f">Ημ. αγοράς<input type="date" name="purchase_date" value="${esc(e.purchase_date)}"></label>
+          </div>
+          <div class="grid2">
+            <label class="f">Προμηθευτής<input name="supplier" value="${esc(e.supplier)}"></label>
+            <label class="f">Αρ. τιμολογίου<input name="invoice_no" value="${esc(e.invoice_no)}"></label>
+          </div>
+          <div class="grid2">
+            <label class="f">Τιμή (€)<input name="price" inputmode="decimal" value="${esc(e.price)}"></label>
+            <label class="f">Εγγύηση έως<input type="date" name="warranty_until" value="${esc(e.warranty_until)}"></label>
+          </div>
+        </div>
+      </details>
+
+      <div class="card stack">
+        <label class="f">Κατάσταση κατά την παραλαβή<textarea name="condition_on_receipt" placeholder="π.χ. γρατζουνιά στην πόρτα, λάστιχο φθαρμένο">${esc(e.condition_on_receipt)}</textarea></label>
+        <label class="f">Σημειώσεις<textarea name="notes">${esc(e.notes)}</textarea></label>
+        <div><h3 style="margin-bottom:8px">Φωτογραφίες</h3>
+          <div class="photos" id="ph">${photos.map((p) => `<img src="${urls[p.path] || ""}" data-u="${urls[p.path] || ""}" alt="${esc(p.kind)}">`).join("")}</div>
+          <div class="row" style="margin-top:8px"><button type="button" class="btn sm" id="addph">${ICON.cam}Φωτογραφία μηχανήματος</button><button type="button" class="btn sm" id="addcond">Φθορά / ζημιά</button></div>
+        </div>
+      </div>
+
+      <div class="err" id="err"></div>
+      <div class="row"><button class="btn primary" id="save" style="flex:1">${isNew ? "Αποθήκευση" : "Αποθήκευση αλλαγών"}</button>${!isNew ? `<button type="button" class="btn danger sm" id="del">Διαγραφή</button>` : ""}</div>
+    </form>
+
+    ${!isNew ? `
+    <div class="sec-h"><h2>Ιστορικό σέρβις &amp; βλαβών</h2><button class="btn sm" id="addlog">${ICON.wrench}Καταχώρηση</button></div>
+    <div class="list">${logs.length ? logs.map((l) => `<div class="item" style="cursor:default"><div class="body"><div class="t">${SVC[l.kind]} · ${fmtDate(l.done_on)}</div><div class="s" style="white-space:normal">${esc(l.description || "")}${l.technician ? " · " + esc(l.technician) : ""}</div></div>${l.cost != null ? `<span class="pill">${eur(l.cost)}</span>` : ""}</div>`).join("") : `<div class="card empty small">Δεν υπάρχει ακόμα ιστορικό.</div>`}</div>` : ""}
+  </div>`;
+
+  // --- Χαρακτηριστικά (κλειδί/τιμή) ---
+  const specRows = Object.entries(e.specs || {});
+  const drawSpecs = () => {
+    $("#specs").innerHTML = specRows.length ? specRows.map(([k, v], i) => `<div class="kv"><input data-i="${i}" data-k value="${esc(k)}" placeholder="π.χ. Χωρητικότητα"><input data-i="${i}" data-v value="${esc(v)}" placeholder="π.χ. 380 lt"><button type="button" class="btn ghost sm" data-rm="${i}" aria-label="Αφαίρεση">✕</button></div>`).join("") : `<div class="small muted">Δεν υπάρχουν ακόμα χαρακτηριστικά.</div>`;
+    const ws = e.web_sources || [];
+    $("#websrc").innerHTML = ws.length ? "Πηγές web: " + ws.map((s) => `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title || s.url)}</a>`).join(" · ") : "";
+  };
+  drawSpecs();
+  $("#specs").oninput = (ev) => { const i = +ev.target.dataset.i; if (ev.target.hasAttribute("data-k")) specRows[i][0] = ev.target.value; else specRows[i][1] = ev.target.value; };
+  $("#specs").onclick = (ev) => { const r = ev.target.closest("[data-rm]"); if (r) { specRows.splice(+r.dataset.rm, 1); drawSpecs(); } };
+  $("#addspec").onclick = () => { specRows.push(["", ""]); drawSpecs(); };
+
+  // Χειροκίνητη αλλαγή → φεύγει η σήμανση προέλευσης
+  const f = $("#ef");
+  f.addEventListener("input", (ev) => { const n = ev.target.name; if (n && e.field_sources?.[n]) { e.field_sources[n] = "manual"; ev.target.closest("label")?.querySelector(".src")?.remove(); } });
+  f.category_id.onchange = () => { const c = S.categories.find((x) => x.id === f.category_id.value); if (c?.default_service_months && !f.service_interval_months.value) f.service_interval_months.value = c.default_service_months; };
+
+  // --- AI: ανάγνωση ταμπέλας ---
+  const setField = (name, val, src) => {
+    if (val == null || val === "") return;
+    const inp = f.elements[name]; if (!inp) return;
+    inp.value = val; e.field_sources[name] = src;
+    const lab = inp.closest("label"); lab.querySelector(".src")?.remove();
+    lab.firstChild.after(Object.assign(document.createElement("span"), { className: "src " + src, textContent: src === "plate" ? "ταμπέλα" : "web · να ελεγχθεί" }));
+  };
+  const runPlate = async (camera) => {
+    const file = await pickPhoto({ camera }); if (!file) return;
+    const out = $("#aiout");
+    out.innerHTML = '<div class="row"><span class="spin"></span> Διαβάζω την ταμπέλα…</div>';
+    try {
+      const big = await shrink(file, 2000, 0.9);
+      pending.push({ blob: big.blob, kind: "plate" });
+      $("#ph").insertAdjacentHTML("beforeend", `<img src="${big.dataUrl}" alt="ταμπέλα">`);
+      const r = await ai("read_plate", { image: big.dataUrl });
+      const p = r.result.plate || {};
+      if (p.is_plate === false && !p.brand && !p.model) { out.innerHTML = `<span class="err">${esc(p.note || "Δεν φαίνεται ταμπέλα στοιχείων. Δοκίμασε πιο κοντά, χωρίς αντανάκλαση.")}</span>`; return; }
+      if (!f.name.value) setField("name", p.name_suggestion, "plate");
+      setField("brand", p.brand, "plate"); setField("model", p.model, "plate");
+      setField("serial_number", p.serial_number, "plate"); setField("manufacture_year", p.manufacture_year, "plate");
+      if (p.category && !f.category_id.value) { const c = eqCats.find((x) => x.name === p.category); if (c) { f.category_id.value = c.id; f.category_id.onchange(); } }
+      const addSpecs = (obj, tag) => { for (const [k, v] of Object.entries(obj || {})) { const i = specRows.findIndex(([kk]) => kk.toLowerCase() === k.toLowerCase()); if (i >= 0) { if (!specRows[i][1]) specRows[i][1] = v; } else specRows.push([k, v]); } };
+      addSpecs(p.specs);
+      if (p.product_code) addSpecs({ "Κωδικός προϊόντος": p.product_code });
+      const w = r.result.web;
+      if (w) {
+        addSpecs(w.specs);
+        if (w.product_type) addSpecs({ "Τύπος": w.product_type });
+        if (w.service_notes) addSpecs({ "Συντήρηση (κατασκευαστής)": w.service_notes });
+        if (w.manual_url) addSpecs({ "Εγχειρίδιο": w.manual_url });
+        if (w.service_interval_months && !f.service_interval_months.value) setField("service_interval_months", w.service_interval_months, "web");
+        e.web_sources = r.result.sources || [];
+      }
+      drawSpecs();
+      const unclear = (p.unclear || []).filter(Boolean);
+      out.innerHTML = `<div class="stack">
+        <div>✓ Διαβάστηκε${p.brand ? ": <b>" + esc(p.brand) + " " + esc(p.model || "") + "</b>" : ""}${p.serial_number ? " · S/N <b style=\"font-family:ui-monospace,monospace\">" + esc(p.serial_number) + "</b>" : ""}</div>
+        ${unclear.length || String(p.serial_number || "").includes("?") ? `<div class="pill warn" style="white-space:normal">Δεν διαβάστηκαν καθαρά: ${esc(unclear.join(", ") || "σειριακός")} — έλεγξέ τα πάνω στην ταμπέλα</div>` : ""}
+        ${w ? `<div class="pill web" style="white-space:normal">Βρέθηκαν ${Object.keys(w.specs || {}).length} στοιχεία στο web — με μωβ σήμανση, να ελεγχθούν</div>` : r.result.web_skipped ? `<div class="muted">Η αναζήτηση στο web δεν είναι ενεργή (λείπει το κλειδί Tavily).</div>` : (p.brand && p.model ? `<div class="muted">Δεν βρέθηκαν στοιχεία στο web για αυτό το μοντέλο.</div>` : "")}
+        <div class="muted">Κόστος: $${r.cost_usd.toFixed(4)} · μήνας: $${r.spent_this_month_usd} από $${r.limit_usd}</div>
+      </div>`;
+    } catch (err) { out.innerHTML = `<span class="err">${esc(err.message)}</span>`; }
+  };
+  $("#snap").onclick = () => runPlate(true);
+  $("#gal").onclick = () => runPlate(false);
+
+  const addPhoto = async (kind) => {
+    const file = await pickPhoto(); if (!file) return;
+    const s = await shrink(file, 1600, 0.85);
+    if (isNew) { pending.push({ blob: s.blob, kind }); $("#ph").insertAdjacentHTML("beforeend", `<img src="${s.dataUrl}" alt="">`); }
+    else { await uploadPhoto(s.blob, { equipment_id: id, kind }); toast("Η φωτογραφία αποθηκεύτηκε"); render(); }
+  };
+  $("#addph").onclick = () => addPhoto("item");
+  $("#addcond").onclick = () => addPhoto("condition");
+  $("#ph").onclick = (ev) => { const im = ev.target.closest("img"); if (im) modal(`<img class="view-img" src="${im.src}" alt=""><button class="btn block" style="margin-top:10px" data-x>Κλείσιμο</button>`, (m, close) => (m.querySelector("[data-x]").onclick = close)); };
+
+  // --- Αποθήκευση ---
+  f.onsubmit = (ev) => {
+    ev.preventDefault();
+    busy($("#save"), async () => {
+      $("#err").textContent = "";
+      const v = Object.fromEntries(new FormData(f));
+      const specs = {}; for (const [k, val] of specRows) if (k.trim() && String(val).trim()) specs[k.trim()] = String(val).trim();
+      const row = {
+        name: v.name.trim(), category_id: v.category_id || null, location_id: v.location_id || null,
+        brand: nul(v.brand), model: nul(v.model), serial_number: nul(v.serial_number), manufacture_year: intOrNull(v.manufacture_year),
+        status: v.status, service_interval_months: intOrNull(v.service_interval_months), last_service_date: v.last_service_date || null,
+        technician_name: nul(v.technician_name), technician_phone: nul(v.technician_phone),
+        received_date: v.received_date || null, purchase_date: v.purchase_date || null, supplier: nul(v.supplier), invoice_no: nul(v.invoice_no),
+        price: num(String(v.price || "").replace(",", ".")), warranty_until: v.warranty_until || null,
+        condition_on_receipt: nul(v.condition_on_receipt), notes: nul(v.notes),
+        specs, field_sources: e.field_sources || {}, web_sources: e.web_sources || [],
+      };
+      try {
+        let saved;
+        if (isNew) saved = check(await sb.from("equipment").insert(row).select().single());
+        else saved = check(await sb.from("equipment").update(row).eq("id", id).select().single());
+        for (const p of pending) await uploadPhoto(p.blob, { equipment_id: saved.id, kind: p.kind });
+        toast(isNew ? `Καταχωρήθηκε ως ${saved.code}` : "Αποθηκεύτηκε");
+        if (isNew) {
+          modal(`<div class="stack"><h2>Καταχωρήθηκε ✓</h2><p>${esc(saved.name)} · <b>${esc(saved.code)}</b></p>
+            <button class="btn primary block" data-a="next">${ICON.cam}Επόμενο μηχάνημα</button>
+            <button class="btn block" data-a="view">Άνοιγμα καρτέλας</button></div>`, (m, close) => {
+            m.querySelector('[data-a="next"]').onclick = () => { close(); location.hash = "#/eq/new?plate=1&t=" + Date.now(); };
+            m.querySelector('[data-a="view"]').onclick = () => { close(); go("/eq/" + saved.id); };
+          });
+        } else render();
+      } catch (err) { $("#err").textContent = err.message; }
+    });
+  };
+  $("#del")?.addEventListener("click", async () => {
+    if (!confirm(`Διαγραφή του «${e.name}» μαζί με φωτογραφίες και ιστορικό; Δεν αναιρείται.\n\nΑν απλώς αποσύρθηκε, άλλαξε την κατάσταση σε «Αποσύρθηκε».`)) return;
+    const paths = photos.map((p) => p.path);
+    if (paths.length) await sb.storage.from("photos").remove(paths);
+    check(await sb.from("equipment").delete().eq("id", id));
+    toast("Διαγράφηκε"); go("/eq");
+  });
+  $("#addlog")?.addEventListener("click", () => modal(`
+    <form class="stack" id="lf"><h2>Καταχώρηση στο ιστορικό</h2>
+      <div class="grid2"><label class="f">Τύπος<select name="kind">${Object.entries(SVC).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select></label>
+      <label class="f">Ημερομηνία<input type="date" name="done_on" value="${today()}" required></label></div>
+      <label class="f">Περιγραφή<textarea name="description" placeholder="τι έγινε, ανταλλακτικά…"></textarea></label>
+      <div class="grid2"><label class="f">Τεχνικός<input name="technician" value="${esc(e.technician_name)}"></label>
+      <label class="f">Κόστος (€)<input name="cost" inputmode="decimal"></label></div>
+      <p class="small muted">Το «Σέρβις» και ο «Έλεγχος» μεταφέρουν αυτόματα την ημερομηνία επόμενου σέρβις.</p>
+      <button class="btn primary">Αποθήκευση</button></form>`, (m, close) => {
+    m.querySelector("#lf").onsubmit = async (ev) => {
+      ev.preventDefault(); const v = Object.fromEntries(new FormData(ev.target));
+      try {
+        check(await sb.from("service_log").insert({ equipment_id: id, kind: v.kind, done_on: v.done_on, description: nul(v.description), technician: nul(v.technician), cost: num(String(v.cost || "").replace(",", ".")) }));
+        close(); toast("Καταχωρήθηκε"); render();
+      } catch (err) { toast(err.message); }
+    };
+  }));
+});
+
+/* ===================== Σκεύη: λίστα ===================== */
+let stFilter = { q: "", cat: "" };
+route(/^\/st$/, async (el) => {
+  const ST = check(await sb.from("stock_items").select("*").order("name"));
+  const cats = S.categories.filter((c) => c.kind === "stock");
+  el.innerHTML = `
+  <div class="stack">
+    <div class="row"><h1>Σκεύη &amp; αναλώσιμα</h1><div class="spacer"></div><span class="muted small">${ST.reduce((s, x) => s + x.qty_current, 0)} τεμ.</span></div>
+    <input type="search" id="q" placeholder="Αναζήτηση…" value="${esc(stFilter.q)}">
+    <div class="chips" id="cc"><button data-v="" class="${!stFilter.cat ? "on" : ""}">Όλα</button>${cats.filter((c) => ST.some((s) => s.category_id === c.id)).map((c) => `<button data-v="${c.id}" class="${stFilter.cat === c.id ? "on" : ""}">${esc(c.name)}</button>`).join("")}</div>
+    <div id="ls" class="stack"></div>
+  </div>
+  <a class="btn primary fab" href="#/st/new">${ICON.plus}Νέο είδος</a>`;
+  const draw = () => {
+    const q = stFilter.q.toLowerCase();
+    const rows = ST.filter((s) => (!stFilter.cat || s.category_id === stFilter.cat) && (!q || [s.name, s.spec, s.brand, s.supplier_code].some((x) => String(x || "").toLowerCase().includes(q))));
+    const groups = cats.map((c) => [c, rows.filter((r) => r.category_id === c.id)]).filter(([, r]) => r.length);
+    const none = rows.filter((r) => !r.category_id); if (none.length) groups.push([{ name: "Χωρίς κατηγορία" }, none]);
+    $("#ls").innerHTML = groups.length ? groups.map(([c, r]) => `<div><div class="sec-h" style="margin-top:8px"><h2>${esc(c.name)}</h2><span class="small muted">${r.reduce((s, x) => s + x.qty_current, 0)} τεμ.</span></div><div class="list">${r.map((s) => `
+      <div class="item" data-id="${s.id}"><div class="body"><div class="t">${esc(s.name)}</div><div class="s">${esc([s.spec, locName(s.location_id) !== "—" ? locName(s.location_id) : ""].filter(Boolean).join(" · "))}</div></div>
+      <div class="qty"><button class="btn sm" data-b="${s.id}" aria-label="Σπάσιμο">−</button><b class="${s.par_level != null && s.qty_current < s.par_level ? "" : ""}" style="${s.par_level != null && s.qty_current < s.par_level ? "color:var(--warn)" : ""}">${s.qty_current}</b></div></div>`).join("")}</div></div>`).join("")
+      : `<div class="card empty">${ST.length ? "Δεν βρέθηκε τίποτα." : "Πρόσθεσε ποτήρια, πιάτα, μαχαιροπίρουνα κ.λπ. με την ποσότητα που παρέλαβες."}</div>`;
+  };
+  draw();
+  $("#q").oninput = (e) => { stFilter.q = e.target.value; draw(); };
+  $("#cc").onclick = (e) => { const b = e.target.closest("button"); if (!b) return; stFilter.cat = b.dataset.v; $$("#cc button").forEach((x) => x.classList.toggle("on", x === b)); draw(); };
+  $("#ls").onclick = (ev) => {
+    const b = ev.target.closest("[data-b]");
+    if (b) { ev.stopPropagation(); return quickMove(ST.find((s) => s.id === b.dataset.b), () => render()); }
+    const it = ev.target.closest(".item"); if (it) go("/st/" + it.dataset.id);
+  };
+});
+
+function quickMove(s, done) {
+  modal(`<form class="stack" id="mf"><h2>${esc(s.name)}</h2><div class="muted small">Τώρα: <b>${s.qty_current}</b> ${esc(s.unit)}</div>
+    <div class="chips" id="rs">${[["broken", "Σπάσιμο"], ["lost", "Απώλεια"], ["purchase", "Αγορά"], ["returned", "Επιστροφή"], ["count", "Μέτρηση"]].map(([k, v], i) => `<button type="button" data-v="${k}" class="${i === 0 ? "on" : ""}">${v}</button>`).join("")}</div>
+    <label class="f" id="ql">Πόσα;<input name="n" inputmode="numeric" value="1" required></label>
+    <label class="f">Σημείωση<input name="note" placeholder="προαιρετικά"></label>
+    <button class="btn primary">Καταχώρηση</button></form>`, (m, close) => {
+    let reason = "broken";
+    m.querySelector("#rs").onclick = (e) => { const b = e.target.closest("button"); if (!b) return; reason = b.dataset.v; m.querySelectorAll("#rs button").forEach((x) => x.classList.toggle("on", x === b)); m.querySelector("#ql").firstChild.textContent = reason === "count" ? "Πόσα μετρήθηκαν συνολικά;" : "Πόσα;"; m.querySelector("[name=n]").value = reason === "count" ? s.qty_current : 1; };
+    m.querySelector("#mf").onsubmit = async (e) => {
+      e.preventDefault(); const n = parseInt(e.target.n.value, 10); if (!(n >= 0)) return;
+      const delta = reason === "count" ? n - s.qty_current : ["broken", "lost"].includes(reason) ? -n : n;
+      if (delta === 0) { close(); return toast("Καμία αλλαγή"); }
+      try { check(await sb.from("stock_movements").insert({ item_id: s.id, delta, reason, note: nul(e.target.note.value) })); close(); toast("Καταχωρήθηκε"); done?.(); }
+      catch (err) { toast(err.message); }
+    };
+  });
+}
+
+/* ===================== Σκεύος: καρτέλα / φόρμα ===================== */
+route(/^\/st\/(new|[0-9a-f-]{36})$/, async (el, id) => {
+  const isNew = id === "new";
+  let s = { name: "", unit: "τεμ.", qty_current: 0 }, moves = [], photos = [];
+  if (!isNew) {
+    const [a, b, c] = await Promise.all([
+      sb.from("stock_items").select("*").eq("id", id).single(),
+      sb.from("stock_movements").select("*").eq("item_id", id).order("created_at", { ascending: false }).limit(50),
+      sb.from("photos").select("*").eq("stock_item_id", id).order("created_at"),
+    ]);
+    s = check(a); moves = b.data || []; photos = c.data || [];
+  }
+  const urls = await signed(photos.map((p) => p.path));
+  const pending = [];
+  const cats = S.categories.filter((c) => c.kind === "stock");
+  el.innerHTML = `
+  <div class="stack">
+    <div class="row"><a class="btn ghost sm" href="#/st">${ICON.back}</a><h1 style="flex:1">${isNew ? "Νέο είδος" : esc(s.name)}</h1></div>
+    ${isNew ? `<div class="ai-box stack"><div><h3>Αναγνώριση από φωτογραφία</h3><div class="small muted">Φωτογράφισε ένα κομμάτι (ή το κουτί του) και το AI προτείνει όνομα, κατηγορία και περιγραφή.</div></div>
+      <div class="row"><button class="btn primary" id="snap">${ICON.cam}Φωτογράφιση</button></div><div id="aiout" class="small"></div></div>` :
+      `<div class="card row" style="justify-content:space-between"><div><div class="muted small">Απόθεμα</div><div style="font:500 2rem var(--serif)">${s.qty_current} <span class="small muted">${esc(s.unit)}</span></div>${s.par_level != null ? `<div class="small ${s.qty_current < s.par_level ? "" : "muted"}" style="${s.qty_current < s.par_level ? "color:var(--warn)" : ""}">ελάχιστο ${s.par_level}</div>` : ""}</div><button class="btn primary" id="mv">Κίνηση</button></div>`}
+    <form id="sf" class="card stack" autocomplete="off">
+      <label class="f">Όνομα<input name="name" required value="${esc(s.name)}" placeholder="π.χ. Ποτήρι κρασιού κολονάτο"></label>
+      <div class="grid2"><label class="f">Κατηγορία<select name="category_id">${opts(cats, s.category_id)}</select></label>
+      <label class="f">Χώρος<select name="location_id">${opts(S.locations, s.location_id)}</select></label></div>
+      <label class="f">Περιγραφή / μέγεθος<input name="spec" value="${esc(s.spec)}" placeholder="π.χ. 350ml, διάφανο"></label>
+      ${isNew ? `<div class="grid2"><label class="f">Ποσότητα που παρέλαβες<input name="qty" inputmode="numeric" value="0" required></label><label class="f">Μονάδα<input name="unit" value="τεμ."></label></div>` : `<label class="f">Μονάδα<input name="unit" value="${esc(s.unit)}"></label>`}
+      <div class="grid2"><label class="f">Ελάχιστο απόθεμα<input name="par_level" inputmode="numeric" value="${esc(s.par_level)}" placeholder="ειδοποίηση κάτω από…"></label>
+      <label class="f">Ανά άτομο σε εκδήλωση<input name="per_guest" inputmode="decimal" value="${esc(s.per_guest)}" placeholder="π.χ. 1 ή 2"></label></div>
+      <details><summary class="small" style="cursor:pointer;font-weight:600">Προμηθευτής &amp; τιμή</summary><div class="stack" style="margin-top:10px">
+        <div class="grid2"><label class="f">Μάρκα / σειρά<input name="brand" value="${esc(s.brand)}"></label><label class="f">Προμηθευτής<input name="supplier" value="${esc(s.supplier)}"></label></div>
+        <div class="grid2"><label class="f">Κωδικός προμηθευτή<input name="supplier_code" value="${esc(s.supplier_code)}"></label><label class="f">Τιμή μονάδας (€)<input name="unit_price" inputmode="decimal" value="${esc(s.unit_price)}"></label></div>
+      </div></details>
+      <label class="f">Σημειώσεις<textarea name="notes">${esc(s.notes)}</textarea></label>
+      <div class="photos" id="ph">${photos.map((p) => `<img src="${urls[p.path] || ""}" alt="">`).join("")}</div>
+      ${!isNew ? `<button type="button" class="btn sm" id="addph">${ICON.cam}Φωτογραφία</button>` : ""}
+      <div class="err" id="err"></div>
+      <div class="row"><button class="btn primary" id="save" style="flex:1">Αποθήκευση</button>${!isNew ? `<button type="button" class="btn danger sm" id="del">Διαγραφή</button>` : ""}</div>
+    </form>
+    ${!isNew ? `<div class="sec-h"><h2>Κινήσεις</h2></div><div class="card tbl-wrap"><table class="t"><thead><tr><th>Ημ/νία</th><th>Κίνηση</th><th class="n">±</th><th>Σημ.</th></tr></thead><tbody>
+      ${moves.map((m) => `<tr><td>${fmtDate(m.created_at.slice(0, 10))}</td><td>${MOVE[m.reason]}</td><td class="n" style="color:${m.delta < 0 ? "var(--bad)" : "var(--ok)"}">${m.delta > 0 ? "+" : ""}${m.delta}</td><td class="small muted">${esc(m.note || "")}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">—</td></tr>`}
+    </tbody></table></div>` : ""}
+  </div>`;
+  const f = $("#sf");
+  $("#mv")?.addEventListener("click", () => quickMove(s, render));
+  $("#snap")?.addEventListener("click", async () => {
+    const file = await pickPhoto(); if (!file) return;
+    const out = $("#aiout"); out.innerHTML = '<div class="row"><span class="spin"></span> Αναγνώριση…</div>';
+    try {
+      const sm = await shrink(file, 1400, 0.85);
+      pending.push({ blob: sm.blob, kind: "item" }); $("#ph").insertAdjacentHTML("beforeend", `<img src="${sm.dataUrl}" alt="">`);
+      const r = await ai("identify_item", { image: sm.dataUrl }); const it = r.result.item || {};
+      if (it.name && !f.name.value) f.name.value = it.name;
+      if (it.spec && !f.spec.value) f.spec.value = it.spec;
+      if (it.brand && !f.brand.value) f.brand.value = it.brand;
+      if (it.category && !f.category_id.value) { const c = cats.find((x) => x.name === it.category); if (c) f.category_id.value = c.id; }
+      out.innerHTML = `✓ ${esc(it.name || "Αναγνωρίστηκε")}${it.note ? " · " + esc(it.note) : ""} <span class="muted">· $${r.cost_usd.toFixed(4)}</span><div class="muted">Έλεγξε τα πεδία και συμπλήρωσε την ποσότητα.</div>`;
+    } catch (err) { out.innerHTML = `<span class="err">${esc(err.message)}</span>`; }
+  });
+  $("#addph")?.addEventListener("click", async () => { const file = await pickPhoto(); if (!file) return; const sm = await shrink(file); await uploadPhoto(sm.blob, { stock_item_id: id }); render(); });
+  f.onsubmit = (ev) => {
+    ev.preventDefault();
+    busy($("#save"), async () => {
+      const v = Object.fromEntries(new FormData(f));
+      const row = { name: v.name.trim(), category_id: v.category_id || null, location_id: v.location_id || null, spec: nul(v.spec), unit: nul(v.unit) || "τεμ.",
+        par_level: intOrNull(v.par_level), per_guest: num(String(v.per_guest || "").replace(",", ".")), brand: nul(v.brand), supplier: nul(v.supplier),
+        supplier_code: nul(v.supplier_code), unit_price: num(String(v.unit_price || "").replace(",", ".")), notes: nul(v.notes) };
+      try {
+        if (isNew) {
+          const saved = check(await sb.from("stock_items").insert(row).select().single());
+          const q = parseInt(v.qty, 10) || 0;
+          if (q) check(await sb.from("stock_movements").insert({ item_id: saved.id, delta: q, reason: "received", note: "Αρχική καταγραφή" }));
+          for (const p of pending) await uploadPhoto(p.blob, { stock_item_id: saved.id, kind: p.kind });
+          toast("Καταχωρήθηκε");
+          modal(`<div class="stack"><h2>Καταχωρήθηκε ✓</h2><p>${esc(saved.name)} · ${q} ${esc(saved.unit)}</p><button class="btn primary block" data-a="n">${ICON.plus}Επόμενο είδος</button><button class="btn block" data-a="l">Στη λίστα</button></div>`, (m, close) => {
+            m.querySelector('[data-a="n"]').onclick = () => { close(); render(); };
+            m.querySelector('[data-a="l"]').onclick = () => { close(); go("/st"); };
+          });
+        } else { check(await sb.from("stock_items").update(row).eq("id", id)); toast("Αποθηκεύτηκε"); render(); }
+      } catch (err) { $("#err").textContent = err.message; }
+    });
+  };
+  $("#del")?.addEventListener("click", async () => {
+    if (!confirm(`Διαγραφή του «${s.name}» και όλων των κινήσεών του;`)) return;
+    if (photos.length) await sb.storage.from("photos").remove(photos.map((p) => p.path));
+    check(await sb.from("stock_items").delete().eq("id", id)); go("/st");
+  });
+});
+
+/* ===================== Εκδηλώσεις ===================== */
+route(/^\/ev$/, async (el) => {
+  const EV = check(await sb.from("events").select("*").order("event_date", { ascending: false }));
+  el.innerHTML = `<div class="stack">
+    <h1>Εκδηλώσεις</h1>
+    <p class="muted small">Βάλε αριθμό ατόμων και η εφαρμογή υπολογίζει τι χρειάζεσαι από κάθε είδος, τι έχεις και τι λείπει. Η ποσότητα ανά άτομο έρχεται από την καρτέλα κάθε είδους και αλλάζει ανά εκδήλωση.</p>
+    <a class="btn primary" href="#/ev/new">${ICON.plus}Νέος έλεγχος εκδήλωσης</a>
+    <div class="list">${EV.map((v) => `<a class="item" href="#/ev/${v.id}"><div class="body"><div class="t">${esc(v.name)}</div><div class="s">${fmtDate(v.event_date)} · ${v.guests} άτομα</div></div></a>`).join("") || ""}</div>
+  </div>`;
+});
+
+route(/^\/ev\/(new|[0-9a-f-]{36})$/, async (el, id) => {
+  const isNew = id === "new";
+  const ST = check(await sb.from("stock_items").select("*").order("name"));
+  let ev = { name: "", event_date: today(), guests: 50, extra_pct: 10 }, lines = {};
+  if (!isNew) {
+    ev = check(await sb.from("events").select("*").eq("id", id).single());
+    for (const l of check(await sb.from("event_lines").select("*").eq("event_id", id))) lines[l.stock_item_id] = l.per_guest;
+  } else for (const s of ST) if (s.per_guest) lines[s.id] = s.per_guest;
+  const cats = S.categories.filter((c) => c.kind === "stock");
+  el.innerHTML = `<div class="stack">
+    <div class="row"><a class="btn ghost sm" href="#/ev">${ICON.back}</a><h1 style="flex:1">${isNew ? "Νέα εκδήλωση" : esc(ev.name)}</h1></div>
+    <form id="vf" class="card stack">
+      <label class="f">Όνομα<input name="name" value="${esc(ev.name)}" placeholder="π.χ. Γάμος Παπαδόπουλου" required></label>
+      <div class="grid3"><label class="f">Ημερομηνία<input type="date" name="event_date" value="${esc(ev.event_date)}"></label>
+      <label class="f">Άτομα<input name="guests" inputmode="numeric" value="${ev.guests}" required></label>
+      <label class="f">Περιθώριο %<input name="extra_pct" inputmode="numeric" value="${ev.extra_pct}"></label></div>
+    </form>
+    <div class="row"><h2 style="flex:1">Ανάγκες</h2><span class="small muted" id="sum"></span></div>
+    <div class="card tbl-wrap"><table class="t"><thead><tr><th>Είδος</th><th class="n">Ανά άτομο</th><th class="n">Χρειάζονται</th><th class="n">Έχεις</th><th class="n">Λείπουν</th></tr></thead><tbody id="tb"></tbody></table></div>
+    <p class="small muted">Όσα έχουν κενό «ανά άτομο» δεν μετράνε. Συμπλήρωσε 0,5 για «ένα ανά δύο άτομα».</p>
+    <div class="row"><button class="btn primary" id="save" style="flex:1">Αποθήκευση εκδήλωσης</button><button class="btn" id="share">Αντιγραφή ελλείψεων</button>${!isNew ? `<button class="btn danger sm" id="del">Διαγραφή</button>` : ""}</div>
+  </div>`;
+  const f = $("#vf");
+  const calc = () => {
+    const g = parseInt(f.guests.value, 10) || 0, x = (parseInt(f.extra_pct.value, 10) || 0) / 100;
+    let miss = 0;
+    const rows = cats.map((c) => [c, ST.filter((s) => s.category_id === c.id)]).concat([[{ name: "Χωρίς κατηγορία" }, ST.filter((s) => !s.category_id)]]).filter(([, r]) => r.length);
+    $("#tb").innerHTML = rows.map(([c, r]) => `<tr><th colspan="5" style="padding-top:14px">${esc(c.name)}</th></tr>` + r.map((s) => {
+      const pg = lines[s.id]; const need = pg ? Math.ceil(g * pg * (1 + x)) : 0; const lack = Math.max(0, need - s.qty_current); if (lack) miss++;
+      return `<tr><td>${esc(s.name)}<div class="small muted">${esc(s.spec || "")}</div></td><td class="n"><input data-s="${s.id}" inputmode="decimal" value="${pg ?? ""}" style="width:64px;min-height:36px;padding:4px 6px;text-align:right"></td>
+      <td class="n">${pg ? need : "—"}</td><td class="n">${s.qty_current}</td><td class="n" style="font-weight:600;color:${lack ? "var(--bad)" : "var(--ok)"}">${pg ? (lack || "✓") : ""}</td></tr>`;
+    }).join("")).join("") || `<tr><td colspan="5" class="muted">Δεν υπάρχουν ακόμα είδη σκευών.</td></tr>`;
+    $("#sum").textContent = miss ? `${miss} είδη με έλλειψη` : "Όλα επαρκούν";
+  };
+  calc();
+  f.oninput = calc;
+  $("#tb").addEventListener("change", (e) => { const i = e.target.closest("[data-s]"); if (!i) return; const v = num(i.value.replace(",", ".")); if (v) lines[i.dataset.s] = v; else delete lines[i.dataset.s]; calc(); });
+  $("#share").onclick = () => {
+    const g = parseInt(f.guests.value, 10) || 0, x = (parseInt(f.extra_pct.value, 10) || 0) / 100;
+    const txt = ST.map((s) => { const pg = lines[s.id]; if (!pg) return null; const need = Math.ceil(g * pg * (1 + x)); const lack = need - s.qty_current; return lack > 0 ? `${s.name}${s.spec ? " (" + s.spec + ")" : ""}: λείπουν ${lack}` : null; }).filter(Boolean);
+    const t = `${f.name.value || "Εκδήλωση"} · ${g} άτομα\n` + (txt.length ? txt.join("\n") : "Δεν λείπει τίποτα.");
+    navigator.clipboard?.writeText(t).then(() => toast("Αντιγράφηκε"), () => modal(`<pre style="white-space:pre-wrap">${esc(t)}</pre>`));
+  };
+  $("#save").onclick = (e) => busy(e.currentTarget, async () => {
+    if (!f.reportValidity()) return;
+    const v = Object.fromEntries(new FormData(f));
+    const row = { name: v.name.trim(), event_date: v.event_date || null, guests: parseInt(v.guests, 10), extra_pct: parseInt(v.extra_pct, 10) || 0 };
+    try {
+      const saved = isNew ? check(await sb.from("events").insert(row).select().single()) : check(await sb.from("events").update(row).eq("id", id).select().single());
+      check(await sb.from("event_lines").delete().eq("event_id", saved.id));
+      const ls = Object.entries(lines).map(([sid, pg]) => ({ event_id: saved.id, stock_item_id: sid, per_guest: pg }));
+      if (ls.length) check(await sb.from("event_lines").insert(ls));
+      toast("Αποθηκεύτηκε"); if (isNew) go("/ev/" + saved.id);
+    } catch (err) { toast(err.message); }
+  });
+  $("#del")?.addEventListener("click", async () => { if (!confirm("Διαγραφή εκδήλωσης;")) return; check(await sb.from("events").delete().eq("id", id)); go("/ev"); });
+});
+
+/* ===================== Ρυθμίσεις ===================== */
+route(/^\/set$/, async (el) => {
+  const owner = S.me?.role === "owner";
+  const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0);
+  const [mem, use] = await Promise.all([
+    sb.from("members").select("*").order("created_at"),
+    sb.from("ai_usage").select("cost_usd,feature,ok").gte("created_at", monthStart.toISOString()),
+  ]);
+  const U = use.data || []; const spent = U.reduce((s, r) => s + Number(r.cost_usd || 0), 0);
+  el.innerHTML = `<div class="stack">
+    <h1>Ρυθμίσεις</h1>
+    <div class="card stack"><h2>Εξαγωγή</h2><p class="small muted">Αρχεία CSV που ανοίγουν στο Excel.</p>
+      <div class="row"><button class="btn" id="x1">Μηχανήματα</button><button class="btn" id="x2">Σκεύη</button><button class="btn" id="x3">Ιστορικό σέρβις</button></div></div>
+
+    <div class="card stack"><h2>Χρήστες</h2>
+      <div class="list">${(mem.data || []).map((m) => `<div class="item" style="cursor:default"><div class="body"><div class="t">${esc(m.name || m.email)}</div><div class="s">${esc(m.email)} · ${m.role === "owner" ? "διαχειριστής" : "υπεύθυνος"}${m.user_id ? "" : " · δεν έχει φτιάξει ακόμα λογαριασμό"}</div></div>${owner && m.role !== "owner" ? `<button class="btn ghost sm danger" data-rm="${m.id}">Αφαίρεση</button>` : ""}</div>`).join("")}</div>
+      ${owner ? `<form id="mf" class="row"><input type="email" name="email" placeholder="e-mail υπευθύνου" required style="flex:2;min-width:180px"><input name="name" placeholder="όνομα" style="flex:1;min-width:120px"><button class="btn">Προσθήκη</button></form>
+      <p class="small muted">Μετά την προσθήκη, ο υπεύθυνος ανοίγει την εφαρμογή και πατά «Δημιουργία λογαριασμού» με το ίδιο e-mail.</p>` : ""}
+    </div>
+
+    <div class="card stack"><h2>Χώροι</h2>
+      <div class="chips" style="flex-wrap:wrap">${S.locations.map((l) => `<span class="pill">${esc(l.name)}</span>`).join("")}</div>
+      <form id="lf" class="row"><input name="n" placeholder="νέος χώρος" required style="flex:1"><button class="btn">Προσθήκη</button></form></div>
+
+    <div class="card stack"><h2>Κατηγορίες</h2>
+      <div class="small muted">Μηχανήματα (με προεπιλεγμένο διάστημα σέρβις)</div>
+      <div class="chips" style="flex-wrap:wrap">${S.categories.filter((c) => c.kind === "equipment").map((c) => `<span class="pill">${esc(c.name)}${c.default_service_months ? " · " + c.default_service_months + "μ" : ""}</span>`).join("")}</div>
+      <div class="small muted">Σκεύη</div>
+      <div class="chips" style="flex-wrap:wrap">${S.categories.filter((c) => c.kind === "stock").map((c) => `<span class="pill">${esc(c.name)}</span>`).join("")}</div>
+      <form id="cf" class="row"><input name="n" placeholder="νέα κατηγορία" required style="flex:2;min-width:150px"><select name="k" style="flex:1;min-width:120px"><option value="equipment">Μηχάνημα</option><option value="stock">Σκεύος</option></select><input name="m" inputmode="numeric" placeholder="σέρβις (μήνες)" style="flex:1;min-width:110px"><button class="btn">Προσθήκη</button></form></div>
+
+    <div class="card stack"><h2>AI</h2>
+      <div class="small">Αυτόν τον μήνα: <b>$${spent.toFixed(3)}</b> από $${S.settings?.monthly_ai_limit_usd} · ${U.filter((u) => u.ok).length} κλήσεις${U.some((u) => !u.ok) ? ` · ${U.filter((u) => !u.ok).length} αποτυχίες` : ""}</div>
+      ${owner ? `<form id="af" class="stack">
+        <label class="row small"><input type="checkbox" name="ai_enabled" style="width:auto;min-height:0" ${S.settings?.ai_enabled ? "checked" : ""}> Ενεργό AI</label>
+        <label class="row small"><input type="checkbox" name="web_lookup" style="width:auto;min-height:0" ${S.settings?.web_lookup ? "checked" : ""}> Αναζήτηση στοιχείων στο web μετά την ταμπέλα</label>
+        <label class="f">Μηνιαίο όριο ($)<input name="limit" inputmode="decimal" value="${S.settings?.monthly_ai_limit_usd}"></label>
+        <button class="btn">Αποθήκευση</button></form>` : ""}
+    </div>
+    <p class="small muted">Συνδεδεμένος ως ${esc(S.user.email)}</p>
+  </div>`;
+  $("#mf")?.addEventListener("submit", async (e) => { e.preventDefault(); try { check(await sb.from("members").insert({ email: e.target.email.value.trim().toLowerCase(), name: nul(e.target.name.value), role: "manager" })); toast("Προστέθηκε"); render(); } catch (err) { toast(err.message); } });
+  el.querySelectorAll("[data-rm]").forEach((b) => (b.onclick = async () => { if (!confirm("Αφαίρεση πρόσβασης;")) return; check(await sb.from("members").delete().eq("id", b.dataset.rm)); render(); }));
+  $("#lf").onsubmit = async (e) => { e.preventDefault(); try { check(await sb.from("locations").insert({ name: e.target.n.value.trim(), sort: 500 })); await loadRefs(); render(); } catch (err) { toast(err.message); } };
+  $("#cf").onsubmit = async (e) => { e.preventDefault(); try { check(await sb.from("categories").insert({ name: e.target.n.value.trim(), kind: e.target.k.value, default_service_months: intOrNull(e.target.m.value), sort: 500 })); await loadRefs(); render(); } catch (err) { toast(err.message); } };
+  $("#af")?.addEventListener("submit", async (e) => { e.preventDefault(); try { check(await sb.from("settings").update({ ai_enabled: e.target.ai_enabled.checked, web_lookup: e.target.web_lookup.checked, monthly_ai_limit_usd: num(e.target.limit.value.replace(",", ".")) || 5 }).eq("id", 1)); await loadRefs(); toast("Αποθηκεύτηκε"); } catch (err) { toast(err.message); } });
+
+  const csv = (name, head, rows) => {
+    const q = (v) => { const s = v == null ? "" : typeof v === "object" ? JSON.stringify(v) : String(v); return /[;"\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+    const body = "\uFEFF" + [head.map((h) => h[1]), ...rows.map((r) => head.map(([k, , fn]) => q(fn ? fn(r) : r[k])))].map((r) => r.join(";")).join("\r\n");
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([body], { type: "text/csv;charset=utf-8" })); a.download = `${name}-${today()}.csv`; a.click();
+  };
+  const specsTxt = (r) => Object.entries(r.specs || {}).map(([k, v]) => `${k}: ${v}`).join(" | ");
+  $("#x1").onclick = async () => csv("matapan-mixanimata", [["code", "Κωδικός"], ["name", "Όνομα"], ["category_id", "Κατηγορία", (r) => catName(r.category_id)], ["location_id", "Χώρος", (r) => locName(r.location_id)], ["brand", "Μάρκα"], ["model", "Μοντέλο"], ["serial_number", "Σειριακός"], ["manufacture_year", "Έτος"], ["status", "Κατάσταση", (r) => STATUS[r.status][0]], ["service_interval_months", "Σέρβις (μήνες)"], ["last_service_date", "Τελ. σέρβις"], ["next_service_date", "Επόμ. σέρβις"], ["technician_name", "Τεχνικός"], ["technician_phone", "Τηλ. τεχνικού"], ["received_date", "Παραλαβή"], ["supplier", "Προμηθευτής"], ["price", "Τιμή"], ["warranty_until", "Εγγύηση έως"], ["specs", "Χαρακτηριστικά", specsTxt], ["condition_on_receipt", "Κατάσταση παραλαβής"], ["notes", "Σημειώσεις"]], check(await sb.from("equipment").select("*").order("code")));
+  $("#x2").onclick = async () => csv("matapan-skevi", [["name", "Είδος"], ["category_id", "Κατηγορία", (r) => catName(r.category_id)], ["spec", "Περιγραφή"], ["location_id", "Χώρος", (r) => locName(r.location_id)], ["qty_current", "Ποσότητα"], ["unit", "Μονάδα"], ["par_level", "Ελάχιστο"], ["per_guest", "Ανά άτομο"], ["brand", "Μάρκα"], ["supplier", "Προμηθευτής"], ["supplier_code", "Κωδ. προμηθευτή"], ["unit_price", "Τιμή μονάδας"]], check(await sb.from("stock_items").select("*").order("name")));
+  $("#x3").onclick = async () => csv("matapan-service", [["done_on", "Ημερομηνία"], ["equipment", "Μηχάνημα", (r) => r.equipment ? `${r.equipment.code} ${r.equipment.name}` : ""], ["kind", "Τύπος", (r) => SVC[r.kind]], ["description", "Περιγραφή"], ["technician", "Τεχνικός"], ["cost", "Κόστος"]], check(await sb.from("service_log").select("*, equipment(code,name)").order("done_on", { ascending: false })));
+});
+
+/* ===================== Εκκίνηση ===================== */
+async function boot() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return loginView();
+  S.user = session.user;
+  await loadRefs();
+  if (!S.me) {
+    $("#app").innerHTML = `<div class="login stack"><div class="logo">Matapan</div><div class="card stack"><h2>Δεν έχεις πρόσβαση ακόμα</h2><p class="small">Ο λογαριασμός <b>${esc(S.user.email)}</b> δημιουργήθηκε, αλλά δεν έχει προστεθεί στους χρήστες. Ζήτα από τον διαχειριστή να τον προσθέσει από τις Ρυθμίσεις.</p><button class="btn" id="o">Έξοδος</button></div></div>`;
+    $("#o").onclick = async () => { await sb.auth.signOut(); boot(); };
+    return;
+  }
+  shell(); render();
+}
+sb.auth.onAuthStateChange((ev) => { if (ev === "SIGNED_OUT") loginView(); });
+boot();
+</script>
+</body>
+</html>
