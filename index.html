@@ -120,6 +120,11 @@ label.f:has(.src.web) :is(input,select){border-left:4px solid var(--web)}
 .photos img{width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid var(--rule);cursor:pointer}
 .kv{display:grid;grid-template-columns:1fr 1fr auto;gap:6px;align-items:center}
 .kv+.kv{margin-top:6px}
+.kv.web input{border-left:4px solid var(--web)}
+.kv.plate input{border-left:4px solid var(--plate)}
+.spec-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+.spec-legend span{display:inline-flex;align-items:center;gap:6px}
+.spec-legend i{width:10px;height:10px;border-radius:5px;display:inline-block}
 table.t{width:100%;border-collapse:collapse;font-size:.9rem}
 table.t th,table.t td{padding:8px 6px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:middle}
 table.t th{font-size:.75rem;color:var(--ink-2);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
@@ -539,13 +544,16 @@ route(/^\/eq\/(new|[0-9a-f-]{36})(?:\?(.*))?$/, async (el, id, qs) => {
 
   // --- Χαρακτηριστικά (κλειδί/τιμή) ---
   const specRows = Object.entries(e.specs || {});
+  const specSrc = (k) => e.field_sources?.["spec:" + String(k).toLowerCase()] || "";
   const drawSpecs = () => {
-    $("#specs").innerHTML = specRows.length ? specRows.map(([k, v], i) => `<div class="kv"><input data-i="${i}" data-k value="${esc(k)}" placeholder="π.χ. Χωρητικότητα"><input data-i="${i}" data-v value="${esc(v)}" placeholder="π.χ. 380 lt"><button type="button" class="btn ghost sm" data-rm="${i}" aria-label="Αφαίρεση">✕</button></div>`).join("") : `<div class="small muted">Δεν υπάρχουν ακόμα χαρακτηριστικά.</div>`;
+    $("#specs").innerHTML = specRows.length ? specRows.map(([k, v], i) => `<div class="kv ${specSrc(k)}" title="${specSrc(k) === "web" ? "Από το web · να ελεγχθεί" : specSrc(k) === "plate" ? "Από την ταμπέλα" : ""}"><input data-i="${i}" data-k value="${esc(k)}" placeholder="π.χ. Χωρητικότητα"><input data-i="${i}" data-v value="${esc(v)}" placeholder="π.χ. 380 lt"><button type="button" class="btn ghost sm" data-rm="${i}" aria-label="Αφαίρεση">✕</button></div>`).join("") : `<div class="small muted">Δεν υπάρχουν ακόμα χαρακτηριστικά.</div>`;
+    const kinds = new Set(specRows.map(([k]) => specSrc(k)));
+    if (kinds.has("web") || kinds.has("plate")) $("#specs").insertAdjacentHTML("beforeend", `<div class="spec-legend small muted">${kinds.has("plate") ? '<span><i style="background:var(--plate)"></i>από την ταμπέλα</span>' : ""}${kinds.has("web") ? '<span><i style="background:var(--web)"></i>από το web · να ελεγχθεί</span>' : ""}</div>`);
     const ws = e.web_sources || [];
     $("#websrc").innerHTML = ws.length ? "Πηγές web: " + ws.map((s) => `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title || s.url)}</a>`).join(" · ") : "";
   };
   drawSpecs();
-  $("#specs").oninput = (ev) => { const i = +ev.target.dataset.i; if (ev.target.hasAttribute("data-k")) specRows[i][0] = ev.target.value; else specRows[i][1] = ev.target.value; };
+  $("#specs").oninput = (ev) => { const i = +ev.target.dataset.i; if (Number.isNaN(i)) return; if (e.field_sources) delete e.field_sources["spec:" + String(specRows[i][0]).toLowerCase()]; ev.target.closest(".kv")?.classList.remove("web", "plate"); if (ev.target.hasAttribute("data-k")) specRows[i][0] = ev.target.value; else specRows[i][1] = ev.target.value; };
   $("#specs").onclick = (ev) => { const r = ev.target.closest("[data-rm]"); if (r) { specRows.splice(+r.dataset.rm, 1); drawSpecs(); } };
   $("#addspec").onclick = () => { specRows.push(["", ""]); drawSpecs(); };
 
@@ -577,16 +585,18 @@ route(/^\/eq\/(new|[0-9a-f-]{36})(?:\?(.*))?$/, async (el, id, qs) => {
       setField("brand", p.brand, "plate"); setField("model", p.model, "plate");
       setField("serial_number", p.serial_number, "plate"); setField("manufacture_year", p.manufacture_year, "plate");
       if (p.category && !f.category_id.value) { const c = eqCats.find((x) => x.name === p.category); if (c) { f.category_id.value = c.id; f.category_id.onchange(); } }
-      const addSpecs = (obj, tag) => { for (const [k, v] of Object.entries(obj || {})) { const i = specRows.findIndex(([kk]) => kk.toLowerCase() === k.toLowerCase()); if (i >= 0) { if (!specRows[i][1]) specRows[i][1] = v; } else specRows.push([k, v]); } };
-      addSpecs(p.specs);
-      if (p.product_code) addSpecs({ "Κωδικός προϊόντος": p.product_code });
+      e.field_sources = e.field_sources || {};
+      let webAdded = 0;
+      const addSpecs = (obj, tag) => { for (const [k, v] of Object.entries(obj || {})) { if (v == null || String(v).trim() === "") continue; const i = specRows.findIndex(([kk]) => kk.toLowerCase() === k.toLowerCase()); let used = false; if (i >= 0) { if (!specRows[i][1]) { specRows[i][1] = v; used = true; } } else { specRows.push([k, v]); used = true; } if (used) { e.field_sources["spec:" + k.toLowerCase()] = tag; if (tag === "web") webAdded++; } } };
+      addSpecs(p.specs, "plate");
+      if (p.product_code) addSpecs({ "Κωδικός προϊόντος": p.product_code }, "plate");
       const w = r.result.web;
       if (w) {
-        addSpecs(w.specs);
-        if (w.product_type) addSpecs({ "Τύπος": w.product_type });
-        if (w.service_notes) addSpecs({ "Συντήρηση (κατασκευαστής)": w.service_notes });
-        if (w.manual_url) addSpecs({ "Εγχειρίδιο": w.manual_url });
-        if (w.service_interval_months && !f.service_interval_months.value) setField("service_interval_months", w.service_interval_months, "web");
+        addSpecs(w.specs, "web");
+        if (w.product_type) addSpecs({ "Τύπος": w.product_type }, "web");
+        if (w.service_notes) addSpecs({ "Συντήρηση (κατασκευαστής)": w.service_notes }, "web");
+        if (w.manual_url) addSpecs({ "Εγχειρίδιο": w.manual_url }, "web");
+        if (w.service_interval_months && !f.service_interval_months.value) { setField("service_interval_months", w.service_interval_months, "web"); webAdded++; }
         e.web_sources = r.result.sources || [];
       }
       drawSpecs();
@@ -594,7 +604,7 @@ route(/^\/eq\/(new|[0-9a-f-]{36})(?:\?(.*))?$/, async (el, id, qs) => {
       out.innerHTML = `<div class="stack">
         <div>✓ Διαβάστηκε${p.brand ? ": <b>" + esc(p.brand) + " " + esc(p.model || "") + "</b>" : ""}${p.serial_number ? " · S/N <b style=\"font-family:ui-monospace,monospace\">" + esc(p.serial_number) + "</b>" : ""}</div>
         ${unclear.length || String(p.serial_number || "").includes("?") ? `<div class="pill warn" style="white-space:normal">Δεν διαβάστηκαν καθαρά: ${esc(unclear.join(", ") || "σειριακός")} — έλεγξέ τα πάνω στην ταμπέλα</div>` : ""}
-        ${w ? `<div class="pill web" style="white-space:normal">Βρέθηκαν ${Object.keys(w.specs || {}).length} στοιχεία στο web — με μωβ σήμανση, να ελεγχθούν</div>` : r.result.web_skipped ? `<div class="muted">Η αναζήτηση στο web δεν είναι ενεργή (λείπει το κλειδί Tavily).</div>` : (p.brand && p.model ? `<div class="muted">Δεν βρέθηκαν στοιχεία στο web για αυτό το μοντέλο.</div>` : "")}
+        ${w ? `<div class="pill web" style="white-space:normal">${webAdded ? `Συμπληρώθηκαν ${webAdded} στοιχεία από το web — με μωβ σήμανση στα «Τεχνικά χαρακτηριστικά», να ελεγχθούν` : "Το web δεν πρόσθεσε κάτι νέο πέρα από την ταμπέλα"}</div>` : r.result.web_skipped ? `<div class="muted">Η αναζήτηση στο web δεν είναι ενεργή (λείπει το κλειδί Tavily).</div>` : (p.brand && p.model ? `<div class="muted">Δεν βρέθηκαν στοιχεία στο web για αυτό το μοντέλο.</div>` : "")}
         <div class="muted">Κόστος: $${r.cost_usd.toFixed(4)} · μήνας: $${r.spent_this_month_usd} από $${r.limit_usd}</div>
       </div>`;
     } catch (err) { out.innerHTML = `<span class="err">${esc(err.message)}</span>`; }
